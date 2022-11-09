@@ -20,7 +20,15 @@ namespace slimeget.ViewModels
                         Application.RequestStop();
                     })
                     }
-                )
+                ),
+                new MenuBarItem("_Server", new MenuItem[]
+                {
+                    new MenuItem("_New", "", () => { })
+                }),
+                new MenuBarItem("_Request", new MenuItem[]
+                {
+                    new MenuItem("_New", "", () => { })
+                })
             };
         }
     }
