@@ -4,7 +4,7 @@ namespace slimeget.Views.Subviews
 {
     internal class ResponseFrameView : FrameView
     {
-        public ResponseFrameView(ServerFrameView serverFrame)
+        public ResponseFrameView()
         {
             Title = "Response";
         }
