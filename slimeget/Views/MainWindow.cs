@@ -17,7 +17,7 @@ namespace slimeget.Views
                 X = 0,
                 Y = 0,
                 Width = Dim.Fill(),
-                Height = Dim.Fill()
+                Height = Dim.Fill(),
             };
 
             MenuBar = new(new MenuBarItem[]
@@ -39,6 +39,8 @@ namespace slimeget.Views
                 Width = Dim.Fill(),
                 Height = Dim.Fill()
             };
+
+            Toplevel.Add(Window, MenuBar);
         }
     }
 }
