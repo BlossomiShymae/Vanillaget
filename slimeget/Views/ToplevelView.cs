@@ -23,6 +23,7 @@ namespace slimeget.Views
         public ToplevelView(ToplevelViewModel viewModel, ServerFrameView serverFrame, RequestFrameView requestFrame, ResponseFrameView responseFrame)
         {
             _viewModel = viewModel;
+            _viewModel.MenuItemClicked += OpenDialog;
 
             X = 0;
             Y = 0;
@@ -68,6 +69,22 @@ namespace slimeget.Views
             _rightPanel.Add(_responseFrame);
 
             Add(_leftPanel, _rightPanel, _menuBar);
+        }
+
+        private void OpenDialog(object? sender, MenuItemClickedEventArgs args)
+        {
+            switch (args.MenuItem)
+            {
+                case MenuItems.FileClose:
+                    Application.RequestStop();
+                    break;
+                case MenuItems.ServerNew:
+                    break;
+                case MenuItems.RequestNew:
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }
