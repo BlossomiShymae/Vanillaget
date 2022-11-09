@@ -9,7 +9,7 @@ IHost host = Host
     .ConfigureServices((context, services) =>
     {
         services.AddHostedService<ApplicationHostService>();
-        services.AddSingleton<MainWindow>();
+        services.AddSingleton<ToplevelView>();
         services.AddSingleton<RequestFrameView>();
         services.AddSingleton<ServerFrameView>();
     })

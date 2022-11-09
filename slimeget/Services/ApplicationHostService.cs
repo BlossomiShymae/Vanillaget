@@ -18,9 +18,9 @@ namespace slimeget.Services
             await Task.CompletedTask;
 
             Application.Init();
-            var mainWindow = (_serviceProvider.GetService(typeof(MainWindow)) as MainWindow);
-            if (mainWindow != null)
-                Application.Run(mainWindow.Toplevel);
+            var toplevel = (_serviceProvider.GetService(typeof(ToplevelView)) as ToplevelView);
+            if (toplevel != null)
+                Application.Run(toplevel);
 
             Application.Shutdown();
 
