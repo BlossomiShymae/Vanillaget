@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Hosting;
 using slimeget.Services;
 using slimeget.Views;
+using slimeget.Views.Subviews;
 
 IHost host = Host
     .CreateDefaultBuilder()
@@ -9,6 +10,7 @@ IHost host = Host
     {
         services.AddHostedService<ApplicationHostService>();
         services.AddSingleton<MainWindow>();
+        services.AddSingleton<ServerFrameView>();
     })
     .Build();
 

@@ -1,4 +1,5 @@
-﻿using Terminal.Gui;
+﻿using slimeget.Views.Subviews;
+using Terminal.Gui;
 
 namespace slimeget.Views
 {
@@ -8,9 +9,9 @@ namespace slimeget.Views
 
         public MenuBar MenuBar { get; set; }
 
-        public Window Window { get; set; }
+        public FrameView ServerFrame { get; set; }
 
-        public MainWindow()
+        public MainWindow(ServerFrameView serverFrame)
         {
             Toplevel = new()
             {
@@ -32,15 +33,9 @@ namespace slimeget.Views
                 )
             });
 
-            Window = new()
-            {
-                X = 0,
-                Y = 0,
-                Width = Dim.Fill(),
-                Height = Dim.Fill()
-            };
+            ServerFrame = serverFrame;
 
-            Toplevel.Add(Window, MenuBar);
+            Toplevel.Add(ServerFrame, MenuBar);
         }
     }
 }
