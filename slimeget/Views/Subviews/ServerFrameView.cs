@@ -1,12 +1,17 @@
-﻿using Terminal.Gui;
+﻿using slimeget.ViewModels;
+using Terminal.Gui;
 
 namespace slimeget.Views.Subviews
 {
     internal class ServerFrameView : FrameView
     {
-        public ServerFrameView()
+        private readonly ServerFrameViewModel _viewModel;
+
+        public ServerFrameView(ServerFrameViewModel viewModel)
         {
-            Title = "Server";
+            _viewModel = viewModel;
+
+            Title = _viewModel.Title;
         }
     }
 }

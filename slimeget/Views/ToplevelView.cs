@@ -1,10 +1,13 @@
-﻿using slimeget.Views.Subviews;
+﻿using slimeget.ViewModels;
+using slimeget.Views.Subviews;
 using Terminal.Gui;
 
 namespace slimeget.Views
 {
     internal class ToplevelView : Toplevel
     {
+        private readonly ToplevelViewModel _viewModel;
+
         private readonly MenuBar _menuBar;
 
         private readonly FrameView _serverFrame;
@@ -17,28 +20,20 @@ namespace slimeget.Views
 
         private readonly View _rightPanel;
 
-        public ToplevelView(ServerFrameView serverFrame, RequestFrameView requestFrame, ResponseFrameView responseFrame)
+        public ToplevelView(ToplevelViewModel viewModel, ServerFrameView serverFrame, RequestFrameView requestFrame, ResponseFrameView responseFrame)
         {
+            _viewModel = viewModel;
+
             X = 0;
             Y = 0;
             Width = Dim.Fill();
             Height = Dim.Fill();
 
-            _menuBar = new(new MenuBarItem[]
-            {
-                new MenuBarItem("_File", new MenuItem[]
-                {
-                    new MenuItem("_Close", "", () =>
-                    {
-                        Application.RequestStop();
-                    })
-                    }
-                )
-            });
-
             _serverFrame = serverFrame;
             _requestFrame = requestFrame;
             _responseFrame = responseFrame;
+
+            _menuBar = new(_viewModel.MenuBarItems.ToArray());
 
             // Left panel the user sees
             _leftPanel = new()

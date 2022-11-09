@@ -1,12 +1,17 @@
-﻿using Terminal.Gui;
+﻿using slimeget.ViewModels;
+using Terminal.Gui;
 
 namespace slimeget.Views.Subviews
 {
     internal class RequestFrameView : FrameView
     {
-        public RequestFrameView()
+        private readonly RequestFrameViewModel _viewModel;
+
+        public RequestFrameView(RequestFrameViewModel viewModel)
         {
-            Title = "Request";
+            _viewModel = viewModel;
+
+            Title = _viewModel.Title;
         }
     }
 }
