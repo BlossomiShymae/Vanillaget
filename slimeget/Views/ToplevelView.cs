@@ -11,7 +11,13 @@ namespace slimeget.Views
 
         private readonly FrameView _requestFrame;
 
-        public ToplevelView(ServerFrameView serverFrame, RequestFrameView requestFrame)
+        private readonly FrameView _responseFrame;
+
+        private readonly View _leftPanel;
+
+        private readonly View _rightPanel;
+
+        public ToplevelView(ServerFrameView serverFrame, RequestFrameView requestFrame, ResponseFrameView responseFrame)
         {
             X = 0;
             Y = 0;
@@ -32,8 +38,41 @@ namespace slimeget.Views
 
             _serverFrame = serverFrame;
             _requestFrame = requestFrame;
+            _responseFrame = responseFrame;
 
-            Add(_serverFrame, _requestFrame, _menuBar);
+            // Left panel the user sees
+            _leftPanel = new()
+            {
+                X = 0,
+                Y = 1, // Account for menu
+                Width = Dim.Percent(25f),
+                Height = Dim.Fill()
+            };
+            _serverFrame.X = 0;
+            _serverFrame.Y = 0;
+            _serverFrame.Height = Dim.Percent(25f);
+            _serverFrame.Width = Dim.Fill();
+            _requestFrame.X = 0;
+            _requestFrame.Y = Pos.Bottom(_serverFrame);
+            _requestFrame.Height = Dim.Fill();
+            _requestFrame.Width = Dim.Fill();
+            _leftPanel.Add(_serverFrame, _requestFrame);
+
+            // Right panel the user sees
+            _rightPanel = new()
+            {
+                X = Pos.Right(_leftPanel),
+                Y = 1, // Account for menu
+                Width = Dim.Fill(),
+                Height = Dim.Fill()
+            };
+            _responseFrame.X = 0;
+            _responseFrame.Y = 0;
+            _responseFrame.Height = Dim.Fill();
+            _responseFrame.Width = Dim.Fill();
+            _rightPanel.Add(_responseFrame);
+
+            Add(_leftPanel, _rightPanel, _menuBar);
         }
     }
 }

@@ -10,6 +10,7 @@ IHost host = Host
     {
         services.AddHostedService<ApplicationHostService>();
         services.AddSingleton<ToplevelView>();
+        services.AddSingleton<ResponseFrameView>();
         services.AddSingleton<RequestFrameView>();
         services.AddSingleton<ServerFrameView>();
     })
