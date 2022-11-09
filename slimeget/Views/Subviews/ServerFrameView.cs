@@ -4,13 +4,13 @@ namespace slimeget.Views.Subviews
 {
     internal class ServerFrameView : FrameView
     {
-        public ServerFrameView()
+        public ServerFrameView(RequestFrameView requestFrame)
         {
             Title = "Server";
-            X = 0;
-            Y = 1;
-            Width = Dim.Fill();
+            X = Pos.Right(requestFrame);
+            Y = 1; // For menu
             Height = Dim.Fill();
+            Width = Dim.Fill();
         }
     }
 }

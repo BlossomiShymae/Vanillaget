@@ -11,7 +11,9 @@ namespace slimeget.Views
 
         public FrameView ServerFrame { get; set; }
 
-        public MainWindow(ServerFrameView serverFrame)
+        public FrameView RequestFrame { get; set; }
+
+        public MainWindow(ServerFrameView serverFrame, RequestFrameView requestFrame)
         {
             Toplevel = new()
             {
@@ -34,8 +36,9 @@ namespace slimeget.Views
             });
 
             ServerFrame = serverFrame;
+            RequestFrame = requestFrame;
 
-            Toplevel.Add(ServerFrame, MenuBar);
+            Toplevel.Add(ServerFrame, RequestFrame, MenuBar);
         }
     }
 }
