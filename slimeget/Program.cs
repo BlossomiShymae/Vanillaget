@@ -10,6 +10,7 @@ IHost host = Host
     .ConfigureServices((context, services) =>
     {
         services.AddHostedService<ApplicationHostService>();
+        services.AddSingleton<WizardFactoryService>();
 
         services.AddSingleton<ToplevelView>();
         services.AddSingleton<ToplevelViewModel>();
