@@ -1,4 +1,5 @@
-﻿using slimeget.ViewModels;
+﻿using slimeget.Services;
+using slimeget.ViewModels;
 using slimeget.Views.Subviews;
 using Terminal.Gui;
 
@@ -20,10 +21,18 @@ namespace slimeget.Views
 
         private readonly View _rightPanel;
 
-        public ToplevelView(ToplevelViewModel viewModel, ServerFrameView serverFrame, RequestFrameView requestFrame, ResponseFrameView responseFrame)
+        private readonly WizardFactoryService _wizardFactoryService;
+
+        public ToplevelView(ToplevelViewModel viewModel,
+            ServerFrameView serverFrame,
+            RequestFrameView requestFrame,
+            ResponseFrameView responseFrame,
+            WizardFactoryService wizardFactoryService)
         {
             _viewModel = viewModel;
-            _viewModel.MenuItemClicked += OpenDialog;
+            _viewModel.MenuItemClicked += OpenWizard;
+
+            _wizardFactoryService = wizardFactoryService;
 
             X = 0;
             Y = 0;
@@ -71,19 +80,44 @@ namespace slimeget.Views
             Add(_leftPanel, _rightPanel, _menuBar);
         }
 
-        private void OpenDialog(object? sender, MenuItemClickedEventArgs args)
+        private void OpenWizard(object? sender, MenuItemClickedEventArgs args)
         {
+            Wizard? wizard = null;
             switch (args.MenuItem)
             {
                 case MenuItems.FileClose:
                     Application.RequestStop();
                     break;
                 case MenuItems.ServerNew:
+                    wizard = _wizardFactoryService.CreateServerNewWizard(x => TryErrorQuery(() =>
+                    {
+                        _viewModel.RequestMethodCollections.Add(new Models.RequestMethodCollection
+                        {
+                            Name = x.nameField.Text?.ToString() ?? "",
+                            Hostname = x.hostnameField.Text?.ToString() ?? "",
+                            Port = UInt32.Parse(x.portField.Text?.ToString() ?? "80"),
+                        });
+                    }));
                     break;
                 case MenuItems.RequestNew:
                     break;
                 default:
                     break;
+            }
+
+            if (wizard != null)
+                Application.Run(wizard);
+        }
+
+        private static void TryErrorQuery(Action action)
+        {
+            try
+            {
+                action.Invoke();
+            }
+            catch (Exception)
+            {
+                MessageBox.ErrorQuery("Validation Error", "The input you have entered was invalid!", "Ok");
             }
         }
     }
