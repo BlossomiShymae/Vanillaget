@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using slimeget.Models;
 using System.Collections.ObjectModel;
 using Terminal.Gui;
 
@@ -6,8 +7,9 @@ namespace slimeget.ViewModels
 {
     internal partial class ToplevelViewModel : ObservableObject
     {
-        [ObservableProperty]
-        private ObservableCollection<MenuBarItem> _menuBarItems = new();
+        public ObservableCollection<MenuBarItem> MenuBarItems = new();
+
+        public ObservableCollection<RequestMethodCollection> RequestMethodCollections = new();
 
         public event EventHandler<MenuItemClickedEventArgs>? MenuItemClicked;
 
