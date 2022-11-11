@@ -1,7 +1,9 @@
-﻿namespace slimeget.Models
+﻿using slimeget.Interfaces;
+
+namespace slimeget.Models
 {
 
-    internal class RequestMethod
+    internal class RequestMethod : IIndexable
     {
         public int Id { get; set; }
 
