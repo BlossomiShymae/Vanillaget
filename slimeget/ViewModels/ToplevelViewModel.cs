@@ -50,7 +50,8 @@ namespace slimeget.ViewModels
                 }),
                 new MenuBarItem("_Request", new MenuItem[]
                 {
-                    new MenuItem("_New", "", () => MenuItemClicked?.Invoke(this, new() { MenuItem = MenuItems.RequestNew }))
+                    new MenuItem("_New", "", () => MenuItemClicked?.Invoke(this, new() { MenuItem = MenuItems.RequestNew })),
+                    new MenuItem("_Send Now", "", () => MenuItemClicked?.Invoke(this, new() { MenuItem = MenuItems.RequestSendNow })),
                 })
             };
         }
@@ -106,6 +107,12 @@ namespace slimeget.ViewModels
             }
             catch (Exception e) { Trace.WriteLine(e); }
         }
+
+        [RelayCommand]
+        private void SendRequestNow()
+        {
+
+        }
     }
 
     internal enum MenuItems
@@ -113,6 +120,7 @@ namespace slimeget.ViewModels
         FileClose,
         ServerNew,
         RequestNew,
+        RequestSendNow,
     }
 
     internal class MenuItemClickedEventArgs : EventArgs

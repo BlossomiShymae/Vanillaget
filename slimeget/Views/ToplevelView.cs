@@ -118,6 +118,9 @@ namespace slimeget.Views
                         _viewModel.SaveRequestMethodCommand.Execute(this);
                     }));
                     break;
+                case MenuItems.RequestSendNow:
+                    _viewModel.SendRequestNowCommand.Execute(this);
+                    break;
                 default:
                     break;
             }
