@@ -91,15 +91,32 @@ namespace slimeget.Views
                 case MenuItems.ServerNew:
                     wizard = _wizardFactoryService.CreateServerNewWizard(x => TryErrorQuery(() =>
                     {
-                        _viewModel.RequestMethodCollections.Add(new Models.RequestMethodCollection
-                        {
-                            Name = x.nameField.Text?.ToString() ?? "",
-                            Hostname = x.hostnameField.Text?.ToString() ?? "",
-                            Port = UInt32.Parse(x.portField.Text?.ToString() ?? "80"),
-                        });
+                        _viewModel.ServerName = x.nameField.Text.ToString() ?? String.Empty;
+                        _viewModel.ServerHostname = x.hostnameField.Text.ToString() ?? String.Empty;
+                        _viewModel.ServerPort = UInt32.Parse(x.portField.Text.ToString() ?? "80");
+                        _viewModel.SaveRequestMethodCollectionCommand.Execute(this);
                     }));
                     break;
                 case MenuItems.RequestNew:
+                    Func<int, HttpMethod> selectedHttpMethod = (int select) =>
+                    {
+                        return select switch
+                        {
+                            0 => HttpMethod.Get,
+                            1 => HttpMethod.Post,
+                            2 => HttpMethod.Put,
+                            3 => HttpMethod.Delete,
+                            4 => HttpMethod.Patch,
+                            _ => throw new ArgumentException("Selected integer is invalid"),
+                        };
+                    };
+                    wizard = _wizardFactoryService.CreateRequestNewWizard(x => TryErrorQuery(() =>
+                    {
+                        _viewModel.RequestName = x.nameField.Text.ToString() ?? String.Empty;
+                        _viewModel.RequestResourcePath = x.pathField.Text.ToString() ?? String.Empty;
+                        _viewModel.RequestHttpMethod = selectedHttpMethod(x.methodRadioGroup.SelectedItem);
+                        _viewModel.SaveRequestMethodCommand.Execute(this);
+                    }));
                     break;
                 default:
                     break;
