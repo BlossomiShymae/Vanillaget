@@ -135,9 +135,9 @@ namespace slimeget.Views
             {
                 action.Invoke();
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                MessageBox.ErrorQuery("Validation Error", "The input you have entered was invalid!", "Ok");
+                MessageBox.ErrorQuery($"Error - {e.GetType().Name}", $"{e.Message}\n{e.StackTrace}", "Ok");
             }
         }
     }

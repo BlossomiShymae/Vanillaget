@@ -6,10 +6,6 @@ namespace slimeget.Services
     internal class WizardFactoryService
     {
         private readonly int _rowMargin = 1;
-        public WizardFactoryService()
-        {
-
-        }
 
         public Wizard CreateRequestNewWizard(Action<(TextField nameField, TextField pathField, RadioGroup methodRadioGroup)> onFinished)
         {

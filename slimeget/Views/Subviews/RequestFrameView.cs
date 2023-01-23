@@ -22,7 +22,7 @@ namespace slimeget.Views.Subviews
                 X = 0,
                 Y = 0,
                 Height = Dim.Fill(),
-                Width = Dim.Fill()
+                Width = Dim.Fill(),
             };
             _listView.SetSource(_viewModel.Requests);
             Add(_listView);

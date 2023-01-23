@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using slimeget.Models;
 using slimeget.Services;
 using slimeget.ViewModels;
 using slimeget.Views;
@@ -14,7 +13,7 @@ IHost host = Host
         // Services
         services.AddHostedService<ApplicationHostService>();
         services.AddSingleton<WizardFactoryService>();
-        services.AddSingleton<RepositoryService<RequestMethodCollection>>();
+        services.AddSingleton<IMediatorService, MediatorService>();
 
         // Views and ViewModels
         services.AddSingleton<ToplevelView>();
@@ -25,6 +24,9 @@ IHost host = Host
         services.AddSingleton<RequestFrameViewModel>();
         services.AddSingleton<ServerFrameView>();
         services.AddSingleton<ServerFrameViewModel>();
+
+        // Add Http Client
+        services.AddHttpClient<ToplevelViewModel>();
     })
     .Build();
 

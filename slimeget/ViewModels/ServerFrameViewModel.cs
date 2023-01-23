@@ -1,11 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using slimeget.Interfaces;
-using slimeget.Models;
 using slimeget.Services;
 
 namespace slimeget.ViewModels
 {
-    internal partial class ServerFrameViewModel : ObservableObject, IUpdatableViewModel
+    internal partial class ServerFrameViewModel : ObservableObject, IMediatorModule
     {
         [ObservableProperty]
         private string _title = String.Empty;
@@ -13,20 +11,14 @@ namespace slimeget.ViewModels
         [ObservableProperty]
         private List<string> _serverNames = new();
 
-        private readonly RepositoryService<RequestMethodCollection> _repositoryService;
-
-        public ServerFrameViewModel(RepositoryService<RequestMethodCollection> repositoryService)
+        public ServerFrameViewModel()
         {
-            _repositoryService = repositoryService;
-
             Title = "Server";
-            _repositoryService.RepositoryChanged += UpdateViewModel;
         }
 
-        public void UpdateViewModel(object? sender, EventArgs args)
+        public void Resolve(ApplicationState state)
         {
-            var data = _repositoryService.Get();
-            ServerNames = _repositoryService.Get().Select(x => x.Name).ToList();
+            ServerNames = state.RequestMethodCollections.Select(x => x.Name).ToList();
         }
     }
 }

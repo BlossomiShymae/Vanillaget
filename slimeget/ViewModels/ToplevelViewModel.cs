@@ -3,14 +3,18 @@ using CommunityToolkit.Mvvm.Input;
 using slimeget.Models;
 using slimeget.Services;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using Terminal.Gui;
 
 namespace slimeget.ViewModels
 {
-    internal partial class ToplevelViewModel : ObservableObject
+    internal partial class ToplevelViewModel : ObservableObject, IMediatorModule
     {
-        private readonly RepositoryService<RequestMethodCollection> _repositoryService;
+        [ObservableProperty]
+        private ApplicationState _applicationState = new();
+
+        private readonly IMediatorService _mediatorService;
+
+        private readonly HttpClient _httpClient;
 
         public ObservableCollection<MenuBarItem> MenuBarItems = new();
 
@@ -34,9 +38,10 @@ namespace slimeget.ViewModels
         [ObservableProperty]
         private HttpMethod _requestHttpMethod = HttpMethod.Get;
 
-        public ToplevelViewModel(RepositoryService<RequestMethodCollection> repositoryService)
+        public ToplevelViewModel(HttpClient httpClient, IMediatorService mediatorService)
         {
-            _repositoryService = repositoryService;
+            _mediatorService = mediatorService;
+            _httpClient = httpClient;
 
             MenuBarItems = new()
             {
@@ -54,64 +59,94 @@ namespace slimeget.ViewModels
                     new MenuItem("_Send Now", "", () => MenuItemClicked?.Invoke(this, new() { MenuItem = MenuItems.RequestSendNow })),
                 })
             };
+
+            _mediatorService.Mediate(_applicationState);
         }
 
         [RelayCommand]
         private void SaveRequestMethodCollection()
         {
-            Trace.WriteLine("saving request method collection");
-            var id = 0;
-            try
-            {
-                id = _repositoryService.Get().Last().Id + 1;
-            }
-            catch (Exception e) { Trace.WriteLine(e.Message); }
-
             var collection = new RequestMethodCollection
             {
-                Id = id,
                 Name = ServerName,
                 Hostname = ServerHostname,
                 Port = ServerPort,
             };
 
-            _repositoryService.Add(collection);
-            _repositoryService.Selection = collection.Id;
+            _applicationState.AddRequestMethodCollection(ref collection);
+            _applicationState.SelectedCollection = collection;
+            _mediatorService.Mediate(_applicationState);
         }
 
         [RelayCommand]
         private void SaveRequestMethod()
         {
-            Trace.WriteLine("saving request method");
-            try
+            var collection = _applicationState.SelectedCollection;
+            if (collection == null)
+                throw new Exception("A server collection must be selected!");
+            var requestMethod = new RequestMethod
             {
-                Predicate<RequestMethodCollection> match = x => x.Id == _repositoryService.Selection;
-                var collections = _repositoryService.Get();
-                var collection = collections.Find(match);
-
-                var id = 0;
-                if (collection.RequestMethods.Count > 0)
-                {
-                    var last = collection.RequestMethods.Last();
-                    id = last.Id + 1;
-                }
-                var requestMethod = new RequestMethod
-                {
-                    Id = id,
-                    Name = RequestName,
-                    ResourcePath = RequestResourcePath,
-                    HttpMethod = RequestHttpMethod
-                };
-                collection.RequestMethods.Add(requestMethod);
-                _repositoryService.Update(collection);
-            }
-            catch (Exception e) { Trace.WriteLine(e); }
+                Name = RequestName,
+                ResourcePath = RequestResourcePath,
+                HttpMethod = RequestHttpMethod,
+            };
+            collection.AddRequestMethod(ref requestMethod);
+            _applicationState.UpdateRequestMethodCollection(collection);
+            _applicationState.SelectedRequest = requestMethod;
+            _mediatorService.Mediate(_applicationState);
         }
 
         [RelayCommand]
         private void SendRequestNow()
         {
+            var collection = _applicationState.SelectedCollection;
+            if (collection == null)
+                throw new Exception("A server collection must be selected!");
 
+            // Deal BaseAddress oddities with "/" character
+            var hostname = collection.Hostname;
+            var port = $":{collection.Port}";
+            // Append "/" as needed for hostname
+            if (!hostname.EndsWith("/"))
+            {
+                //hostname = $"{hostname}{port}";
+                hostname = hostname.Insert(hostname.Length, "/");
+            }
+            else
+            {
+                //hostname = hostname.Insert(hostname.Length - 1, port);
+            }
+            var uri = new Uri(hostname);
+
+            // Remove "/" as needed for resource path
+            var request = _applicationState.SelectedRequest;
+            if (request == null)
+                throw new Exception("Cannot send request without a selected request!");
+            var resourcePath = request.ResourcePath;
+            if (resourcePath.StartsWith("/"))
+                resourcePath = resourcePath.Remove(0, 1);
+
+            // Prepare to send request
+            HttpResponseMessage response = null;
+            if (request.HttpMethod == HttpMethod.Get)
+            {
+                response = _httpClient.GetAsync($"{hostname}{resourcePath}").Result;
+            }
+
+            // Prepare to process response
+            if (response == null)
+                throw new Exception("Failed to received a response!");
+            request.Response = response;
+            _applicationState.SelectedRequest = request;
+            collection.UpdateRequestMethod(request);
+            _applicationState.SelectedCollection = collection;
+            _applicationState.UpdateRequestMethodCollection(collection);
+            _mediatorService.Mediate(_applicationState);
+        }
+
+        public void Resolve(ApplicationState state)
+        {
+            _applicationState = state;
         }
     }
 
