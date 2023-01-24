@@ -3,7 +3,7 @@ using slimeget.Services;
 
 namespace slimeget.ViewModels
 {
-    internal partial class RequestFrameViewModel : ObservableObject, IMediatorModule
+    internal partial class RequestFrameViewModel : ObservableObject
     {
         [ObservableProperty]
         private string _title = String.Empty;

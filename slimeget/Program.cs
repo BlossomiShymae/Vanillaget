@@ -13,7 +13,6 @@ IHost host = Host
         // Services
         services.AddHostedService<ApplicationHostService>();
         services.AddSingleton<WizardFactoryService>();
-        services.AddSingleton<IMediatorService, MediatorService>();
 
         // Views and ViewModels
         services.AddSingleton<ToplevelView>();

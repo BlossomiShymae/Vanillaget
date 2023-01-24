@@ -7,12 +7,10 @@ using Terminal.Gui;
 
 namespace slimeget.ViewModels
 {
-    internal partial class ToplevelViewModel : ObservableObject, IMediatorModule
+    internal partial class ToplevelViewModel : ObservableObject
     {
         [ObservableProperty]
         private ApplicationState _applicationState = new();
-
-        private readonly IMediatorService _mediatorService;
 
         private readonly HttpClient _httpClient;
 
@@ -38,9 +36,8 @@ namespace slimeget.ViewModels
         [ObservableProperty]
         private HttpMethod _requestHttpMethod = HttpMethod.Get;
 
-        public ToplevelViewModel(HttpClient httpClient, IMediatorService mediatorService)
+        public ToplevelViewModel(HttpClient httpClient)
         {
-            _mediatorService = mediatorService;
             _httpClient = httpClient;
 
             MenuBarItems = new()
@@ -59,8 +56,6 @@ namespace slimeget.ViewModels
                     new MenuItem("_Send Now", "", () => MenuItemClicked?.Invoke(this, new() { MenuItem = MenuItems.RequestSendNow })),
                 })
             };
-
-            _mediatorService.Mediate(_applicationState);
         }
 
         [RelayCommand]
@@ -75,7 +70,6 @@ namespace slimeget.ViewModels
 
             _applicationState.AddRequestMethodCollection(ref collection);
             _applicationState.SelectedCollection = collection;
-            _mediatorService.Mediate(_applicationState);
         }
 
         [RelayCommand]
@@ -93,7 +87,6 @@ namespace slimeget.ViewModels
             collection.AddRequestMethod(ref requestMethod);
             _applicationState.UpdateRequestMethodCollection(collection);
             _applicationState.SelectedRequest = requestMethod;
-            _mediatorService.Mediate(_applicationState);
         }
 
         [RelayCommand]
@@ -141,7 +134,6 @@ namespace slimeget.ViewModels
             collection.UpdateRequestMethod(request);
             _applicationState.SelectedCollection = collection;
             _applicationState.UpdateRequestMethodCollection(collection);
-            _mediatorService.Mediate(_applicationState);
         }
 
         public void Resolve(ApplicationState state)
