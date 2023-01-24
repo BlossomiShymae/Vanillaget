@@ -1,10 +1,9 @@
-﻿using slimeget.Interfaces;
-using slimeget.ViewModels;
+﻿using slimeget.ViewModels;
 using Terminal.Gui;
 
 namespace slimeget.Views.Subviews
 {
-    internal class RequestFrameView : FrameView, IRefreshableView
+    internal class RequestFrameView : FrameView, IObservingView
     {
         private readonly RequestFrameViewModel _viewModel;
 
@@ -27,10 +26,10 @@ namespace slimeget.Views.Subviews
             _listView.SetSource(_viewModel.Requests);
             Add(_listView);
 
-            _viewModel.PropertyChanged += RefreshView;
+            _viewModel.PropertyChanged += OnPropertyChanged;
         }
 
-        public void RefreshView(object? sender, EventArgs args)
+        public void OnPropertyChanged(object? sender, EventArgs args)
         {
             _listView.SetSource(_viewModel.Requests);
             Application.Refresh();

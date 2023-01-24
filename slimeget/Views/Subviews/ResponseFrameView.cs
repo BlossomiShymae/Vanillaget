@@ -1,10 +1,9 @@
-﻿using slimeget.Interfaces;
-using slimeget.ViewModels;
+﻿using slimeget.ViewModels;
 using Terminal.Gui;
 
 namespace slimeget.Views.Subviews
 {
-    internal class ResponseFrameView : FrameView, IRefreshableView
+    internal class ResponseFrameView : FrameView, IObservingView
     {
         private readonly ResponseFrameViewModel _viewModel;
 
@@ -31,10 +30,10 @@ namespace slimeget.Views.Subviews
 
             Title = viewModel.Title;
 
-            _viewModel.PropertyChanged += RefreshView;
+            _viewModel.PropertyChanged += OnPropertyChanged;
         }
 
-        public void RefreshView(object? sender, EventArgs args)
+        public void OnPropertyChanged(object? sender, EventArgs args)
         {
             _textView.Text = _viewModel.Response;
             Application.Refresh();
