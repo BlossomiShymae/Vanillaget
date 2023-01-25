@@ -14,15 +14,17 @@ namespace slimeget.Models
 
         public HttpMethod HttpMethod { get; set; } = HttpMethod.Get;
 
-        public HttpResponseMessage Response { get; set; } = new();
+        public HttpResponseMessage? Response { get; set; } = null;
 
         public string PrettyPrintResponse()
         {
+            if (Response == null) return String.Empty;
+
             try
             {
                 return JToken.Parse(Response.Content.ReadAsStringAsync().Result).ToString();
             }
-            catch (JsonReaderException e) { return String.Empty; }
+            catch (JsonReaderException) { return String.Empty; }
         }
     }
 }

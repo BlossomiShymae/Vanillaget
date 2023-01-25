@@ -34,6 +34,7 @@ namespace slimeget.Views.Subviews
         public void OnPropertyChanged(object? sender, EventArgs args)
         {
             _textView.Text = _viewModel.Response;
+            Title = _viewModel.Title;
             Application.Refresh();
         }
     }
