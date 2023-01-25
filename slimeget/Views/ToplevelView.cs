@@ -76,6 +76,8 @@ namespace slimeget.Views
             _responseFrame.Height = Dim.Fill();
             _responseFrame.Width = Dim.Fill();
             _rightPanel.Add(_responseFrame);
+            var scrollBarFrame = new ScrollBarView(_responseFrame, true, true);
+            _rightPanel.Add(scrollBarFrame);
 
             Add(_leftPanel, _rightPanel, _menuBar);
         }

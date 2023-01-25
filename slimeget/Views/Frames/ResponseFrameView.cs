@@ -9,8 +9,6 @@ namespace slimeget.Views.Subviews
 
         private readonly TextView _textView;
 
-        private readonly ScrollBarView _scrollBarView;
-
         public ResponseFrameView(ResponseFrameViewModel viewModel)
         {
             _viewModel = viewModel;
@@ -24,9 +22,9 @@ namespace slimeget.Views.Subviews
                 Width = Dim.Fill(),
                 ReadOnly = true,
                 Text = _viewModel.Response,
+                ColorScheme = Colors.Menu,
             };
             Add(_textView);
-            _scrollBarView = new ScrollBarView(_textView, true);
 
             Title = viewModel.Title;
 
