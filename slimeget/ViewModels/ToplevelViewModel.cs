@@ -76,7 +76,7 @@ namespace slimeget.ViewModels
             _applicationState.AddRequestMethodCollection(ref collection);
             _applicationState.SelectedCollection = collection;
 
-            Messenger.Send<ApplicationStateUpdatedMessage>(new(_applicationState));
+            Messenger.Send<ApplicationStateMessage>(new(_applicationState));
         }
 
         [RelayCommand]
@@ -95,7 +95,7 @@ namespace slimeget.ViewModels
             _applicationState.UpdateRequestMethodCollection(collection);
             _applicationState.SelectedRequest = requestMethod;
 
-            Messenger.Send<ApplicationStateUpdatedMessage>(new(_applicationState));
+            Messenger.Send<ApplicationStateMessage>(new(_applicationState));
         }
 
         [RelayCommand]
@@ -144,7 +144,7 @@ namespace slimeget.ViewModels
             _applicationState.SelectedCollection = collection;
             _applicationState.UpdateRequestMethodCollection(collection);
 
-            Messenger.Send<ApplicationStateUpdatedMessage>(new(_applicationState));
+            Messenger.Send<ApplicationStateMessage>(new(_applicationState));
         }
     }
 

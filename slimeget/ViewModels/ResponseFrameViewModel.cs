@@ -6,7 +6,7 @@ namespace slimeget.ViewModels
 {
 	[ObservableRecipient]
 	[ObservableObject]
-	internal partial class ResponseFrameViewModel : IRecipient<ApplicationStateUpdatedMessage>
+	internal partial class ResponseFrameViewModel : IRecipient<ApplicationStateMessage>
 	{
 		[ObservableProperty]
 		private string _title = String.Empty;
@@ -19,10 +19,10 @@ namespace slimeget.ViewModels
 			Messenger = messenger;
 			Title = "Response";
 
-			Messenger.Register<ApplicationStateUpdatedMessage>(this);
+			Messenger.Register<ApplicationStateMessage>(this);
 		}
 
-		void IRecipient<ApplicationStateUpdatedMessage>.Receive(ApplicationStateUpdatedMessage message)
+		void IRecipient<ApplicationStateMessage>.Receive(ApplicationStateMessage message)
 		{
 			Response = message.applicationState.SelectedRequest.PrettyPrintResponse();
 		}
