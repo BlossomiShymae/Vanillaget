@@ -30,7 +30,7 @@ namespace slimeget.Views
             WizardFactoryService wizardFactoryService)
         {
             _viewModel = viewModel;
-            _viewModel.MenuItemClicked += OpenWizard;
+            _viewModel.MenuItemClicked += OnMenuItemClicked;
 
             _wizardFactoryService = wizardFactoryService;
 
@@ -82,7 +82,7 @@ namespace slimeget.Views
             Add(_leftPanel, _rightPanel, _menuBar);
         }
 
-        private void OpenWizard(object? sender, MenuItemClickedEventArgs args)
+        private void OnMenuItemClicked(object? sender, MenuItemClickedEventArgs args)
         {
             Wizard? wizard = null;
             switch (args.MenuItem)
