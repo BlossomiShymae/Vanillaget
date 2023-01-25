@@ -12,7 +12,7 @@
 
         public List<RequestMethod> RequestMethods { get; set; } = new();
 
-        public void AddRequestMethod(ref RequestMethod data)
+        public void Add(ref RequestMethod data)
         {
             try
             {
@@ -22,7 +22,7 @@
             RequestMethods.Add(data);
         }
 
-        public void UpdateRequestMethod(RequestMethod data)
+        public void Update(RequestMethod data)
         {
             var index = RequestMethods.FindIndex(x => x.Id == data.Id);
             if (index == -1)

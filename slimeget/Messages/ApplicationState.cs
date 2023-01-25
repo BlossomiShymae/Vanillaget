@@ -10,7 +10,7 @@ namespace slimeget.Services
 
 		public RequestMethod SelectedRequest = new();
 
-		public void AddRequestMethodCollection(ref RequestMethodCollection data)
+		public void Add(ref RequestMethodCollection data)
 		{
 			try
 			{
@@ -20,7 +20,7 @@ namespace slimeget.Services
 			RequestMethodCollections.Add(data);
 		}
 
-		public void UpdateRequestMethodCollection(RequestMethodCollection data)
+		public void Update(RequestMethodCollection data)
 		{
 			var index = RequestMethodCollections.FindIndex(x => x.Id == data.Id);
 			if (index == -1)

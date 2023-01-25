@@ -73,7 +73,7 @@ namespace slimeget.ViewModels
                 Port = ServerPort,
             };
 
-            _applicationState.AddRequestMethodCollection(ref collection);
+            _applicationState.Add(ref collection);
             _applicationState.SelectedCollection = collection;
 
             Messenger.Send<ApplicationStateMessage>(new(_applicationState));
@@ -91,8 +91,8 @@ namespace slimeget.ViewModels
                 ResourcePath = RequestResourcePath,
                 HttpMethod = RequestHttpMethod,
             };
-            collection.AddRequestMethod(ref requestMethod);
-            _applicationState.UpdateRequestMethodCollection(collection);
+            collection.Add(ref requestMethod);
+            _applicationState.Update(collection);
             _applicationState.SelectedRequest = requestMethod;
 
             Messenger.Send<ApplicationStateMessage>(new(_applicationState));
@@ -140,9 +140,9 @@ namespace slimeget.ViewModels
                 throw new Exception("Failed to received a response!");
             request.Response = response;
             _applicationState.SelectedRequest = request;
-            collection.UpdateRequestMethod(request);
+            collection.Update(request);
             _applicationState.SelectedCollection = collection;
-            _applicationState.UpdateRequestMethodCollection(collection);
+            _applicationState.Update(collection);
 
             Messenger.Send<ApplicationStateMessage>(new(_applicationState));
         }
