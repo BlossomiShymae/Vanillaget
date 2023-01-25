@@ -2,5 +2,5 @@
 
 namespace slimeget.Messages
 {
-	internal record ApplicationStateUpdatedMessage(ApplicationState applicationState);
+	internal record ApplicationStateMessage(ApplicationState applicationState);
 }
