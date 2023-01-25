@@ -1,5 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
+using slimeget.Messages;
 using slimeget.Models;
 using slimeget.Services;
 using System.Collections.ObjectModel;
@@ -7,7 +9,9 @@ using Terminal.Gui;
 
 namespace slimeget.ViewModels
 {
-    internal partial class ToplevelViewModel : ObservableObject
+    [ObservableRecipient]
+    [ObservableObject]
+    internal partial class ToplevelViewModel
     {
         [ObservableProperty]
         private ApplicationState _applicationState = new();
@@ -36,8 +40,9 @@ namespace slimeget.ViewModels
         [ObservableProperty]
         private HttpMethod _requestHttpMethod = HttpMethod.Get;
 
-        public ToplevelViewModel(HttpClient httpClient)
+        public ToplevelViewModel(IMessenger messenger, HttpClient httpClient)
         {
+            Messenger = messenger;
             _httpClient = httpClient;
 
             MenuBarItems = new()
@@ -70,6 +75,8 @@ namespace slimeget.ViewModels
 
             _applicationState.AddRequestMethodCollection(ref collection);
             _applicationState.SelectedCollection = collection;
+
+            Messenger.Send<ApplicationStateUpdatedMessage>(new(_applicationState));
         }
 
         [RelayCommand]
@@ -87,6 +94,8 @@ namespace slimeget.ViewModels
             collection.AddRequestMethod(ref requestMethod);
             _applicationState.UpdateRequestMethodCollection(collection);
             _applicationState.SelectedRequest = requestMethod;
+
+            Messenger.Send<ApplicationStateUpdatedMessage>(new(_applicationState));
         }
 
         [RelayCommand]
@@ -102,12 +111,12 @@ namespace slimeget.ViewModels
             // Append "/" as needed for hostname
             if (!hostname.EndsWith("/"))
             {
-                //hostname = $"{hostname}{port}";
+                hostname = $"{hostname}{port}";
                 hostname = hostname.Insert(hostname.Length, "/");
             }
             else
             {
-                //hostname = hostname.Insert(hostname.Length - 1, port);
+                hostname = hostname.Insert(hostname.Length - 1, port);
             }
             var uri = new Uri(hostname);
 
@@ -134,11 +143,8 @@ namespace slimeget.ViewModels
             collection.UpdateRequestMethod(request);
             _applicationState.SelectedCollection = collection;
             _applicationState.UpdateRequestMethodCollection(collection);
-        }
 
-        public void Resolve(ApplicationState state)
-        {
-            _applicationState = state;
+            Messenger.Send<ApplicationStateUpdatedMessage>(new(_applicationState));
         }
     }
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using CommunityToolkit.Mvvm.Messaging;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using slimeget.Services;
 using slimeget.ViewModels;
@@ -12,6 +13,7 @@ IHost host = Host
     {
         // Services
         services.AddHostedService<ApplicationHostService>();
+        services.AddSingleton<IMessenger, WeakReferenceMessenger>();
         services.AddSingleton<WizardFactoryService>();
 
         // Views and ViewModels

@@ -1,24 +1,30 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using slimeget.Services;
+using CommunityToolkit.Mvvm.Messaging;
+using slimeget.Messages;
 
 namespace slimeget.ViewModels
 {
-    internal partial class ServerFrameViewModel : ObservableObject
-    {
-        [ObservableProperty]
-        private string _title = String.Empty;
+	[ObservableRecipient]
+	[ObservableObject]
+	internal partial class ServerFrameViewModel : IRecipient<ApplicationStateUpdatedMessage>
+	{
+		[ObservableProperty]
+		private string _title = String.Empty;
 
-        [ObservableProperty]
-        private List<string> _serverNames = new();
+		[ObservableProperty]
+		private List<string> _serverNames = new();
 
-        public ServerFrameViewModel()
-        {
-            Title = "Server";
-        }
+		public ServerFrameViewModel(IMessenger messenger)
+		{
+			Messenger = messenger;
+			Title = "Server";
 
-        public void Resolve(ApplicationState state)
-        {
-            ServerNames = state.RequestMethodCollections.Select(x => x.Name).ToList();
-        }
-    }
+			Messenger.Register<ApplicationStateUpdatedMessage>(this);
+		}
+
+		void IRecipient<ApplicationStateUpdatedMessage>.Receive(ApplicationStateUpdatedMessage message)
+		{
+			ServerNames = message.applicationState.RequestMethodCollections.Select(x => x.Name).ToList();
+		}
+	}
 }

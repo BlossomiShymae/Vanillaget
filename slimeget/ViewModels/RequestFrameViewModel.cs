@@ -1,26 +1,32 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using slimeget.Services;
+using CommunityToolkit.Mvvm.Messaging;
+using slimeget.Messages;
 
 namespace slimeget.ViewModels
 {
-    internal partial class RequestFrameViewModel : ObservableObject
-    {
-        [ObservableProperty]
-        private string _title = String.Empty;
+	[ObservableRecipient]
+	[ObservableObject]
+	internal partial class RequestFrameViewModel : IRecipient<ApplicationStateUpdatedMessage>
+	{
+		[ObservableProperty]
+		private string _title = String.Empty;
 
-        [ObservableProperty]
-        private List<string> _requests = new();
+		[ObservableProperty]
+		private List<string> _requests = new();
 
-        public RequestFrameViewModel()
-        {
-            Title = "Request";
-        }
+		public RequestFrameViewModel(IMessenger messenger)
+		{
+			Messenger = messenger;
+			Title = "Request";
 
-        public void Resolve(ApplicationState state)
-        {
-            Requests = state.SelectedCollection.RequestMethods
-                .Select(x => $"{x.HttpMethod.Method.ToUpper()} {x.Name}")
-                .ToList();
-        }
-    }
+			Messenger.Register<ApplicationStateUpdatedMessage>(this);
+		}
+
+		void IRecipient<ApplicationStateUpdatedMessage>.Receive(ApplicationStateUpdatedMessage message)
+		{
+			Requests = message.applicationState.SelectedCollection.RequestMethods
+				.Select(x => $"{x.HttpMethod.Method.ToUpper()} {x.Name}")
+				.ToList();
+		}
+	}
 }

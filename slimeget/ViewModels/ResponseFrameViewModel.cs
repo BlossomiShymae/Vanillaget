@@ -1,24 +1,30 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using slimeget.Services;
+using CommunityToolkit.Mvvm.Messaging;
+using slimeget.Messages;
 
 namespace slimeget.ViewModels
 {
-    internal partial class ResponseFrameViewModel : ObservableObject
-    {
-        [ObservableProperty]
-        private string _title = String.Empty;
+	[ObservableRecipient]
+	[ObservableObject]
+	internal partial class ResponseFrameViewModel : IRecipient<ApplicationStateUpdatedMessage>
+	{
+		[ObservableProperty]
+		private string _title = String.Empty;
 
-        [ObservableProperty]
-        private string _response = String.Empty;
+		[ObservableProperty]
+		private string _response = String.Empty;
 
-        public ResponseFrameViewModel()
-        {
-            Title = "Response";
-        }
+		public ResponseFrameViewModel(IMessenger messenger)
+		{
+			Messenger = messenger;
+			Title = "Response";
 
-        public void Resolve(ApplicationState state)
-        {
-            Response = state.SelectedRequest.PrettyPrintResponse();
-        }
-    }
+			Messenger.Register<ApplicationStateUpdatedMessage>(this);
+		}
+
+		void IRecipient<ApplicationStateUpdatedMessage>.Receive(ApplicationStateUpdatedMessage message)
+		{
+			Response = message.applicationState.SelectedRequest.PrettyPrintResponse();
+		}
+	}
 }
