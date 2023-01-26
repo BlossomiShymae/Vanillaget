@@ -15,7 +15,6 @@ IHost host = Host
         // Services
         services.AddHostedService<ApplicationHostService>();
         services.AddSingleton<IMessenger, WeakReferenceMessenger>();
-        services.AddSingleton<WizardFactoryService>();
 
         // Views and ViewModels
         services.AddSingleton<ToplevelView>();

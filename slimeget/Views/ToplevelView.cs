@@ -1,166 +1,153 @@
-﻿using slimeget.Services;
-using slimeget.ViewModels;
+﻿using slimeget.ViewModels;
 using slimeget.Views.Frames;
 using slimeget.Views.Subviews;
+using slimeget.Views.Wizards;
 using Terminal.Gui;
 
 namespace slimeget.Views
 {
-    internal class ToplevelView : Toplevel
-    {
-        private readonly ToplevelViewModel _viewModel;
-        private readonly MenuBar _menuBar;
-        private readonly FrameView _serverFrame;
-        private readonly FrameView _requestFrame;
-        private readonly FrameView _responseFrame;
-        private readonly FrameView _statusFrame;
-        private readonly View _leftPanel;
-        private readonly View _rightPanel;
-        private readonly View _rootPanel;
+	internal class ToplevelView : Toplevel
+	{
+		private readonly ToplevelViewModel _viewModel;
+		private readonly MenuBar _menuBar;
+		private readonly FrameView _serverFrame;
+		private readonly FrameView _requestFrame;
+		private readonly FrameView _responseFrame;
+		private readonly FrameView _statusFrame;
+		private readonly View _leftPanel;
+		private readonly View _rightPanel;
+		private readonly View _rootPanel;
 
-        private readonly WizardFactoryService _wizardFactoryService;
+		public ToplevelView(ToplevelViewModel viewModel,
+			ServerFrameView serverFrame,
+			RequestFrameView requestFrame,
+			ResponseFrameView responseFrame,
+			StatusFrameView statusFrame)
+		{
+			_viewModel = viewModel;
+			_viewModel.MenuItemClicked += OnMenuItemClicked;
 
-        public ToplevelView(ToplevelViewModel viewModel,
-            ServerFrameView serverFrame,
-            RequestFrameView requestFrame,
-            ResponseFrameView responseFrame,
-            StatusFrameView statusFrame,
-            WizardFactoryService wizardFactoryService)
-        {
-            _viewModel = viewModel;
-            _viewModel.MenuItemClicked += OnMenuItemClicked;
+			X = 0;
+			Y = 0;
+			Width = Dim.Fill();
+			Height = Dim.Fill();
 
-            _wizardFactoryService = wizardFactoryService;
+			_serverFrame = serverFrame;
+			_requestFrame = requestFrame;
+			_responseFrame = responseFrame;
+			_statusFrame = statusFrame;
 
-            X = 0;
-            Y = 0;
-            Width = Dim.Fill();
-            Height = Dim.Fill();
+			_menuBar = new(_viewModel.MenuBarItems.ToArray());
 
-            _serverFrame = serverFrame;
-            _requestFrame = requestFrame;
-            _responseFrame = responseFrame;
-            _statusFrame = statusFrame;
+			// Panel that contains both left-right panels
+			_rootPanel = new()
+			{
+				X = 0,
+				Y = Pos.Bottom(_menuBar),
+				Width = Dim.Fill(),
+				Height = Dim.Fill() - 4
+			};
 
-            _menuBar = new(_viewModel.MenuBarItems.ToArray());
+			// Left panel the user sees
+			_leftPanel = new()
+			{
+				X = 0,
+				Y = 0,
+				Width = Dim.Percent(25f),
+				Height = Dim.Fill()
+			};
+			_serverFrame.X = 0;
+			_serverFrame.Y = 0;
+			_serverFrame.Height = Dim.Percent(25f);
+			_serverFrame.Width = Dim.Fill();
+			_requestFrame.X = 0;
+			_requestFrame.Y = Pos.Bottom(_serverFrame);
+			_requestFrame.Height = Dim.Fill();
+			_requestFrame.Width = Dim.Fill();
+			_leftPanel.Add(_serverFrame, _requestFrame);
 
-            // Panel that contains both left-right panels
-            _rootPanel = new()
-            {
-                X = 0,
-                Y = Pos.Bottom(_menuBar),
-                Width = Dim.Fill(),
-                Height = Dim.Fill() - 4
-            };
+			// Right panel the user sees
+			_rightPanel = new()
+			{
+				X = Pos.Right(_leftPanel),
+				Y = 0,
+				Width = Dim.Fill(),
+				Height = Dim.Fill()
+			};
+			_responseFrame.X = 0;
+			_responseFrame.Y = 0;
+			_responseFrame.Height = Dim.Fill();
+			_responseFrame.Width = Dim.Fill();
+			_rightPanel.Add(_responseFrame);
+			var scrollBarFrame = new ScrollBarView(_responseFrame, true, true);
+			_rightPanel.Add(scrollBarFrame);
 
-            // Left panel the user sees
-            _leftPanel = new()
-            {
-                X = 0,
-                Y = 0,
-                Width = Dim.Percent(25f),
-                Height = Dim.Fill()
-            };
-            _serverFrame.X = 0;
-            _serverFrame.Y = 0;
-            _serverFrame.Height = Dim.Percent(25f);
-            _serverFrame.Width = Dim.Fill();
-            _requestFrame.X = 0;
-            _requestFrame.Y = Pos.Bottom(_serverFrame);
-            _requestFrame.Height = Dim.Fill();
-            _requestFrame.Width = Dim.Fill();
-            _leftPanel.Add(_serverFrame, _requestFrame);
+			_rootPanel.Add(_leftPanel, _rightPanel);
 
-            // Right panel the user sees
-            _rightPanel = new()
-            {
-                X = Pos.Right(_leftPanel),
-                Y = 0,
-                Width = Dim.Fill(),
-                Height = Dim.Fill()
-            };
-            _responseFrame.X = 0;
-            _responseFrame.Y = 0;
-            _responseFrame.Height = Dim.Fill();
-            _responseFrame.Width = Dim.Fill();
-            _rightPanel.Add(_responseFrame);
-            var scrollBarFrame = new ScrollBarView(_responseFrame, true, true);
-            _rightPanel.Add(scrollBarFrame);
+			_statusFrame.X = 0;
+			_statusFrame.Y = Pos.Bottom(_rootPanel);
+			_statusFrame.Height = Dim.Fill();
+			_statusFrame.Width = Dim.Fill();
 
-            _rootPanel.Add(_leftPanel, _rightPanel);
+			Add(_rootPanel, _menuBar, _statusFrame);
+		}
 
-            _statusFrame.X = 0;
-            _statusFrame.Y = Pos.Bottom(_rootPanel);
-            _statusFrame.Height = Dim.Fill();
-            _statusFrame.Width = Dim.Fill();
+		public void Load()
+		{
+			_viewModel.LoadApplication();
+		}
 
-            Add(_rootPanel, _menuBar, _statusFrame);
-        }
+		private void OnMenuItemClicked(object? sender, MenuItemClickedEventArgs args)
+		{
+			switch (args.MenuItem)
+			{
+				case MenuItems.FileClose:
+					_viewModel.CloseApplicationCommand.Execute(this);
+					break;
+				case MenuItems.ServerNew:
+					var serverWizard = new NewServerWizard();
+					Action<Wizard.WizardButtonEventArgs> serverHandler = (args) =>
+					{
+						_viewModel.ServerName = serverWizard.Name;
+						_viewModel.ServerHostname = serverWizard.Hostname;
+						_viewModel.ServerPort = serverWizard.Port;
+						_viewModel.SaveRequestMethodCollectionCommand.Execute(this);
+					};
+					serverWizard.Finished += serverHandler;
+					Application.Run(serverWizard);
+					serverWizard.Finished -= serverHandler;
+					break;
+				case MenuItems.RequestNew:
+					var requestWizard = new NewRequestWizard();
+					Action<Wizard.WizardButtonEventArgs> requestHandler = (args) =>
+					{
+						_viewModel.RequestName = requestWizard.Name;
+						_viewModel.RequestResourcePath = requestWizard.Path;
+						_viewModel.RequestHttpMethod = requestWizard.Method;
+						_viewModel.SaveRequestMethodCommand.Execute(this);
+					};
+					requestWizard.Finished += requestHandler;
+					Application.Run(requestWizard);
+					requestWizard.Finished -= requestHandler;
+					break;
+				case MenuItems.RequestSendNow:
+					_viewModel.SendRequestNowCommand.Execute(this);
+					break;
+				default:
+					break;
+			}
+		}
 
-        public void Load()
-        {
-            _viewModel.LoadApplication();
-        }
-
-        private void OnMenuItemClicked(object? sender, MenuItemClickedEventArgs args)
-        {
-            Wizard? wizard = null;
-            switch (args.MenuItem)
-            {
-                case MenuItems.FileClose:
-                    _viewModel.CloseApplicationCommand.Execute(this);
-                    break;
-                case MenuItems.ServerNew:
-                    wizard = _wizardFactoryService.CreateServerNewWizard(x => TryErrorQuery(() =>
-                    {
-                        _viewModel.ServerName = x.nameField.Text.ToString() ?? String.Empty;
-                        _viewModel.ServerHostname = x.hostnameField.Text.ToString() ?? String.Empty;
-                        _viewModel.ServerPort = UInt32.Parse(x.portField.Text.ToString() ?? "80");
-                        _viewModel.SaveRequestMethodCollectionCommand.Execute(this);
-                    }));
-                    break;
-                case MenuItems.RequestNew:
-                    Func<int, HttpMethod> selectedHttpMethod = (int select) =>
-                    {
-                        return select switch
-                        {
-                            0 => HttpMethod.Get,
-                            1 => HttpMethod.Post,
-                            2 => HttpMethod.Put,
-                            3 => HttpMethod.Delete,
-                            4 => HttpMethod.Patch,
-                            _ => throw new ArgumentException("Selected integer is invalid"),
-                        };
-                    };
-                    wizard = _wizardFactoryService.CreateRequestNewWizard(x => TryErrorQuery(() =>
-                    {
-                        _viewModel.RequestName = x.nameField.Text.ToString() ?? String.Empty;
-                        _viewModel.RequestResourcePath = x.pathField.Text.ToString() ?? String.Empty;
-                        _viewModel.RequestHttpMethod = selectedHttpMethod(x.methodRadioGroup.SelectedItem);
-                        _viewModel.SaveRequestMethodCommand.Execute(this);
-                    }));
-                    break;
-                case MenuItems.RequestSendNow:
-                    _viewModel.SendRequestNowCommand.Execute(this);
-                    break;
-                default:
-                    break;
-            }
-
-            if (wizard != null)
-                Application.Run(wizard);
-        }
-
-        private static void TryErrorQuery(Action action)
-        {
-            try
-            {
-                action.Invoke();
-            }
-            catch (Exception e)
-            {
-                MessageBox.ErrorQuery($"Error - {e.GetType().Name}", $"{e.Message}\n{e.StackTrace}", "Ok");
-            }
-        }
-    }
+		private static void TryErrorQuery(Action action)
+		{
+			try
+			{
+				action.Invoke();
+			}
+			catch (Exception e)
+			{
+				MessageBox.ErrorQuery($"Error - {e.GetType().Name}", $"{e.Message}\n{e.StackTrace}", "Ok");
+			}
+		}
+	}
 }
