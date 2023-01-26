@@ -1,5 +1,6 @@
 ﻿using slimeget.Services;
 using slimeget.ViewModels;
+using slimeget.Views.Frames;
 using slimeget.Views.Subviews;
 using Terminal.Gui;
 
@@ -8,18 +9,14 @@ namespace slimeget.Views
     internal class ToplevelView : Toplevel
     {
         private readonly ToplevelViewModel _viewModel;
-
         private readonly MenuBar _menuBar;
-
         private readonly FrameView _serverFrame;
-
         private readonly FrameView _requestFrame;
-
         private readonly FrameView _responseFrame;
-
+        private readonly FrameView _statusFrame;
         private readonly View _leftPanel;
-
         private readonly View _rightPanel;
+        private readonly View _rootPanel;
 
         private readonly WizardFactoryService _wizardFactoryService;
 
@@ -27,6 +24,7 @@ namespace slimeget.Views
             ServerFrameView serverFrame,
             RequestFrameView requestFrame,
             ResponseFrameView responseFrame,
+            StatusFrameView statusFrame,
             WizardFactoryService wizardFactoryService)
         {
             _viewModel = viewModel;
@@ -42,14 +40,24 @@ namespace slimeget.Views
             _serverFrame = serverFrame;
             _requestFrame = requestFrame;
             _responseFrame = responseFrame;
+            _statusFrame = statusFrame;
 
             _menuBar = new(_viewModel.MenuBarItems.ToArray());
+
+            // Panel that contains both left-right panels
+            _rootPanel = new()
+            {
+                X = 0,
+                Y = Pos.Bottom(_menuBar),
+                Width = Dim.Fill(),
+                Height = Dim.Fill() - 4
+            };
 
             // Left panel the user sees
             _leftPanel = new()
             {
                 X = 0,
-                Y = 1, // Account for menu
+                Y = 0,
                 Width = Dim.Percent(25f),
                 Height = Dim.Fill()
             };
@@ -67,7 +75,7 @@ namespace slimeget.Views
             _rightPanel = new()
             {
                 X = Pos.Right(_leftPanel),
-                Y = 1, // Account for menu
+                Y = 0,
                 Width = Dim.Fill(),
                 Height = Dim.Fill()
             };
@@ -79,7 +87,14 @@ namespace slimeget.Views
             var scrollBarFrame = new ScrollBarView(_responseFrame, true, true);
             _rightPanel.Add(scrollBarFrame);
 
-            Add(_leftPanel, _rightPanel, _menuBar);
+            _rootPanel.Add(_leftPanel, _rightPanel);
+
+            _statusFrame.X = 0;
+            _statusFrame.Y = Pos.Bottom(_rootPanel);
+            _statusFrame.Height = Dim.Fill();
+            _statusFrame.Width = Dim.Fill();
+
+            Add(_rootPanel, _menuBar, _statusFrame);
         }
 
         public void Load()

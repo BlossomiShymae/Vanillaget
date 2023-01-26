@@ -4,6 +4,7 @@ using Microsoft.Extensions.Hosting;
 using slimeget.Services;
 using slimeget.ViewModels;
 using slimeget.Views;
+using slimeget.Views.Frames;
 using slimeget.Views.Subviews;
 
 // Use dependency injection
@@ -25,6 +26,8 @@ IHost host = Host
         services.AddSingleton<RequestFrameViewModel>();
         services.AddSingleton<ServerFrameView>();
         services.AddSingleton<ServerFrameViewModel>();
+        services.AddSingleton<StatusFrameView>();
+        services.AddSingleton<StatusFrameViewModel>();
 
         // Add Http Client
         services.AddHttpClient<ToplevelViewModel>();
