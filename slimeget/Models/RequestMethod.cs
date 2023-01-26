@@ -16,15 +16,23 @@ namespace slimeget.Models
 
         public HttpResponseMessage? Response { get; set; } = null;
 
+        public string ResponseJson { get; set; } = string.Empty;
+
         public string PrettyPrintResponse()
         {
             if (Response == null) return String.Empty;
 
             try
             {
-                return JToken.Parse(Response.Content.ReadAsStringAsync().Result).ToString();
+                var json = JToken.Parse(Response.Content.ReadAsStringAsync().Result).ToString();
+                ResponseJson = json;
+                return json;
             }
-            catch (JsonReaderException) { return String.Empty; }
+            catch (JsonReaderException)
+            {
+                if (string.IsNullOrEmpty(ResponseJson)) return String.Empty;
+                return ResponseJson;
+            }
         }
     }
 }

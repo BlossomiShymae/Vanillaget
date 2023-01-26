@@ -1,4 +1,5 @@
-﻿using slimeget.Models;
+﻿using Newtonsoft.Json;
+using slimeget.Models;
 
 namespace slimeget.Services
 {
@@ -26,6 +27,26 @@ namespace slimeget.Services
 			if (index == -1)
 				throw new Exception("Request method collection does not exist in application state.");
 			RequestMethodCollections[index] = data;
+		}
+
+		public void Save()
+		{
+			var json = JsonConvert.SerializeObject(this);
+			if (json == null) return;
+
+			App.Default.ApplicationState = json;
+			App.Default.Save();
+		}
+
+		public static ApplicationState? LoadInstance()
+		{
+			var json = App.Default.ApplicationState;
+			if (string.IsNullOrEmpty(json)) return null;
+
+			var data = JsonConvert.DeserializeObject<ApplicationState>(json);
+			if (data == null) return null;
+
+			return data;
 		}
 	}
 }

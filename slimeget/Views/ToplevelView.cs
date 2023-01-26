@@ -82,13 +82,18 @@ namespace slimeget.Views
             Add(_leftPanel, _rightPanel, _menuBar);
         }
 
+        public void Load()
+        {
+            _viewModel.LoadApplication();
+        }
+
         private void OnMenuItemClicked(object? sender, MenuItemClickedEventArgs args)
         {
             Wizard? wizard = null;
             switch (args.MenuItem)
             {
                 case MenuItems.FileClose:
-                    Application.RequestStop();
+                    _viewModel.CloseApplicationCommand.Execute(this);
                     break;
                 case MenuItems.ServerNew:
                     wizard = _wizardFactoryService.CreateServerNewWizard(x => TryErrorQuery(() =>

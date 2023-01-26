@@ -63,6 +63,23 @@ namespace slimeget.ViewModels
             };
         }
 
+        public void LoadApplication()
+        {
+            var applicationState = ApplicationState.LoadInstance();
+            if (applicationState != null)
+            {
+                _applicationState = applicationState;
+                Messenger.Send<ApplicationStateMessage>(new(_applicationState));
+            }
+        }
+
+        [RelayCommand]
+        private void CloseApplication()
+        {
+            _applicationState.Save();
+            Application.RequestStop();
+        }
+
         [RelayCommand]
         private void SaveRequestMethodCollection()
         {

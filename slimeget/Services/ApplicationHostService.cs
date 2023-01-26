@@ -20,7 +20,10 @@ namespace slimeget.Services
             Application.Init();
             var toplevel = (_serviceProvider.GetService(typeof(ToplevelView)) as ToplevelView);
             if (toplevel != null)
+            {
+                toplevel.Load();
                 Application.Run(toplevel);
+            }
 
             Application.Shutdown();
 
