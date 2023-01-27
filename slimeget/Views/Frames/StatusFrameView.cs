@@ -7,7 +7,7 @@ namespace slimeget.Views.Frames
 	{
 		private readonly StatusFrameViewModel _viewModel;
 		private readonly TextField _statusField;
-		private readonly ProgressBar _progressBar;
+		private readonly TextField _uriField;
 
 		public StatusFrameView(StatusFrameViewModel viewModel)
 		{
@@ -17,20 +17,21 @@ namespace slimeget.Views.Frames
 			{
 				X = 0,
 				Y = 0,
-				Height = Dim.Fill(),
+				Height = 1,
 				Width = Dim.Fill(),
 				ReadOnly = true,
 				ColorScheme = Colors.Menu,
 			};
-			_progressBar = new ProgressBar
+			_uriField = new TextField
 			{
 				X = 0,
 				Y = Pos.Bottom(_statusField),
-				Height = Dim.Fill(),
+				Height = 1,
 				Width = Dim.Fill(),
-				Fraction = 0.0f
+				ReadOnly = true,
+				ColorScheme = Colors.Menu,
 			};
-			Add(_statusField, _progressBar);
+			Add(_statusField, _uriField);
 
 			Title = _viewModel.Title;
 
@@ -39,8 +40,8 @@ namespace slimeget.Views.Frames
 
 		public void OnPropertyChanged(object? sender, EventArgs args)
 		{
-			_statusField.Text = _viewModel.StatusText;
-			_progressBar.Fraction = _viewModel.GetProgress();
+			_statusField.Text = _viewModel.Status;
+			_uriField.Text = _viewModel.Uri;
 			Application.Refresh();
 		}
 	}

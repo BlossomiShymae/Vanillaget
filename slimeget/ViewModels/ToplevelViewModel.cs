@@ -116,7 +116,7 @@ namespace slimeget.ViewModels
         }
 
         [RelayCommand]
-        private void SendRequestNow()
+        private async Task SendRequestNow()
         {
             var collection = _applicationState.SelectedCollection;
             if (collection == null)
@@ -135,7 +135,6 @@ namespace slimeget.ViewModels
             {
                 hostname = hostname.Insert(hostname.Length - 1, port);
             }
-            var uri = new Uri(hostname);
 
             // Remove "/" as needed for resource path
             var request = _applicationState.SelectedRequest;
@@ -146,10 +145,12 @@ namespace slimeget.ViewModels
                 resourcePath = resourcePath.Remove(0, 1);
 
             // Prepare to send request
-            HttpResponseMessage response = null;
+            HttpResponseMessage? response = null;
+            var uri = hostname + resourcePath;
+            Messenger.Send<StatusUpdateMessage>(new($"Sending {request.HttpMethod.Method} request to {uri}...", uri));
             if (request.HttpMethod == HttpMethod.Get)
             {
-                response = _httpClient.GetAsync($"{hostname}{resourcePath}").Result;
+                response = await _httpClient.GetAsync(uri);
             }
 
             // Prepare to process response

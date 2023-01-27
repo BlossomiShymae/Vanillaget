@@ -6,26 +6,20 @@ namespace slimeget.ViewModels
 {
 	[ObservableRecipient]
 	[ObservableObject]
-	internal partial class StatusFrameViewModel : IRecipient<ApplicationStateMessage>
+	internal partial class StatusFrameViewModel : IRecipient<ApplicationStateMessage>, IRecipient<StatusUpdateMessage>
 	{
 		public readonly string Title = "Status";
 		[ObservableProperty]
-		private ushort _progress = 0;
+		private string _status = string.Empty;
 		[ObservableProperty]
-		private string _statusText = string.Empty;
+		private string _uri = string.Empty;
 
 		public StatusFrameViewModel(IMessenger messenger)
 		{
 			Messenger = messenger;
 
 			Messenger.Register<ApplicationStateMessage>(this);
-		}
-
-		public float GetProgress()
-		{
-			var value = Progress / 100f;
-			if (value > 1.0f) return 1.0f;
-			return value;
+			Messenger.Register<StatusUpdateMessage>(this);
 		}
 
 		void IRecipient<ApplicationStateMessage>.Receive(ApplicationStateMessage message)
@@ -34,8 +28,14 @@ namespace slimeget.ViewModels
 			var response = request.Response;
 			if (response != null)
 			{
-				StatusText = $"{(int)response.StatusCode} - {response.StatusCode}";
+				Status = $"{(int)response.StatusCode} - {response.StatusCode}";
 			}
+		}
+
+		void IRecipient<StatusUpdateMessage>.Receive(StatusUpdateMessage message)
+		{
+			Status = message.Status;
+			Uri = message.Uri;
 		}
 	}
 }
