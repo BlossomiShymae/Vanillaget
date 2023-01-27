@@ -27,11 +27,13 @@ namespace slimeget.Views.Subviews
             Add(_listView);
 
             _viewModel.PropertyChanged += OnPropertyChanged;
+            _listView.OpenSelectedItem += viewModel.SelectRequestCommand.Execute;
         }
 
         public void OnPropertyChanged(object? sender, EventArgs args)
         {
             _listView.SetSource(_viewModel.Requests);
+            _listView.SelectedItem = _viewModel.SelectedItem;
             Application.Refresh();
         }
     }
