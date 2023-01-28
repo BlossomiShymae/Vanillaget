@@ -10,7 +10,6 @@ namespace slimeget.ViewModels
 	{
 		[ObservableProperty]
 		private string _title = String.Empty;
-
 		[ObservableProperty]
 		private List<string> _serverNames = new();
 

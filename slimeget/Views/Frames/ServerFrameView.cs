@@ -6,7 +6,6 @@ namespace slimeget.Views.Subviews
     internal class ServerFrameView : FrameView, IObservingView
     {
         private readonly ServerFrameViewModel _viewModel;
-
         private readonly ListView _listView;
 
         public ServerFrameView(ServerFrameViewModel viewModel)

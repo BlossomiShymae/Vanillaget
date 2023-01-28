@@ -6,7 +6,6 @@ namespace slimeget.Views.Subviews
     internal class RequestFrameView : FrameView, IObservingView
     {
         private readonly RequestFrameViewModel _viewModel;
-
         private readonly ListView _listView;
 
         public RequestFrameView(RequestFrameViewModel viewModel)

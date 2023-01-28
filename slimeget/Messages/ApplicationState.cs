@@ -6,9 +6,7 @@ namespace slimeget.Services
 	internal class ApplicationState
 	{
 		public List<RequestMethodCollection> RequestMethodCollections = new();
-
 		public RequestMethodCollection SelectedCollection = new();
-
 		public RequestMethod? SelectedRequest = new();
 
 		public void Add(ref RequestMethodCollection data)
