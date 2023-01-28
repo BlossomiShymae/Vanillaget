@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using slimeget.Messages;
+using slimeget.Models;
 
 namespace slimeget.ViewModels
 {
@@ -10,6 +11,7 @@ namespace slimeget.ViewModels
 	internal partial class ResponseFrameViewModel : IRecipient<ApplicationStateMessage>
 	{
 		private static readonly string _baseTitle = "Response";
+		private RequestMethod? _requestMethod;
 		[ObservableProperty]
 		private string _title = _baseTitle;
 		[ObservableProperty]
@@ -26,22 +28,29 @@ namespace slimeget.ViewModels
 		private void ShowHeaders()
 		{
 			Title = $"{_baseTitle} - Headers";
+			if (_requestMethod == null) return;
+
+			var response = _requestMethod.Response;
+			if (response == null) return;
+
+			Text = response.Headers.ToString();
 		}
 
 		[RelayCommand]
 		private void ShowBody()
 		{
 			Title = $"{_baseTitle} - Body";
+			if (_requestMethod == null) return;
+
+			Text = _requestMethod.PrettyPrintResponse();
 		}
 
 		void IRecipient<ApplicationStateMessage>.Receive(ApplicationStateMessage message)
 		{
 			var request = message.applicationState.SelectedRequest;
-			var response = request.Response;
+			_requestMethod = request;
 
-			if (response == null) return;
-
-			Text = request.PrettyPrintResponse();
+			ShowBody();
 		}
 	}
 }
