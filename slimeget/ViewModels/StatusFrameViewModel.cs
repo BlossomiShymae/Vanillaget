@@ -28,7 +28,7 @@ namespace slimeget.ViewModels
 			var response = request.Response;
 			if (response != null)
 			{
-				Status = $"{(int)response.StatusCode} - {response.StatusCode}";
+				Status = $"{request.HttpMethod.Method} {(int)response.StatusCode} - {response.StatusCode}";
 			}
 		}
 
