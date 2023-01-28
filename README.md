@@ -1,1 +1,1 @@
-# slimeget
+# Vanillaget
