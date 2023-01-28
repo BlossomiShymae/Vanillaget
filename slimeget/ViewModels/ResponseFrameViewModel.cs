@@ -27,10 +27,15 @@ namespace slimeget.ViewModels
 		[RelayCommand]
 		private void ShowHeaders()
 		{
-			Title = $"{_baseTitle} - Headers";
-			if (_requestMethod == null) return;
+			var method = _requestMethod;
+			if (method != null) Title = $"{_requestMethod} - {_baseTitle} - Headers";
+			else
+			{
+				Title = $"{_baseTitle} - Headers";
+				return;
+			}
 
-			var response = _requestMethod.Response;
+			var response = method.Response;
 			if (response == null) return;
 
 			Text = response.Headers.ToString();
@@ -39,10 +44,15 @@ namespace slimeget.ViewModels
 		[RelayCommand]
 		private void ShowBody()
 		{
-			Title = $"{_baseTitle} - Body";
-			if (_requestMethod == null) return;
+			var method = _requestMethod;
+			if (method != null) Title = $"{_requestMethod} - {_baseTitle} - Body";
+			else
+			{
+				Title = $"{_baseTitle} - Body";
+				return;
+			}
 
-			Text = _requestMethod.PrettyPrintResponse();
+			Text = method.PrettyPrintResponse();
 		}
 
 		void IRecipient<ApplicationStateMessage>.Receive(ApplicationStateMessage message)

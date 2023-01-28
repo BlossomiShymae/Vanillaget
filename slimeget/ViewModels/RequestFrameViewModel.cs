@@ -47,7 +47,7 @@ namespace slimeget.ViewModels
 
 			var methods = message.applicationState.SelectedCollection.RequestMethods;
 			Requests = methods
-				.Select(x => $"{x.HttpMethod.Method.ToUpper()} {x.Name}")
+				.Select(x => x.ToString())
 				.ToList();
 		}
 	}
