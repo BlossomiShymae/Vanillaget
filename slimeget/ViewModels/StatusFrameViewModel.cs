@@ -25,11 +25,11 @@ namespace slimeget.ViewModels
 		void IRecipient<ApplicationStateMessage>.Receive(ApplicationStateMessage message)
 		{
 			var request = message.applicationState.SelectedRequest;
+			if (request == null) return;
+
 			var response = request.Response;
-			if (response != null)
-			{
-				Status = $"{request.HttpMethod.Method} {(int)response.StatusCode} - {response.StatusCode}";
-			}
+			if (response == null) return;
+			Status = $"{request.HttpMethod.Method} {(int)response.StatusCode} - {response.StatusCode}";
 		}
 
 		void IRecipient<StatusUpdateMessage>.Receive(StatusUpdateMessage message)

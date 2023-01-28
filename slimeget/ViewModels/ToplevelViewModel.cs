@@ -13,32 +13,24 @@ namespace slimeget.ViewModels
     [ObservableObject]
     internal partial class ToplevelViewModel
     {
+        public event EventHandler<MenuItemClickedEventArgs>? MenuItemClicked;
+        public ObservableCollection<MenuBarItem> MenuBarItems = new();
         [ObservableProperty]
         private ApplicationState _applicationState = new();
-
-        private readonly HttpClient _httpClient;
-
-        public ObservableCollection<MenuBarItem> MenuBarItems = new();
-
-        public event EventHandler<MenuItemClickedEventArgs>? MenuItemClicked;
-
         [ObservableProperty]
         private string _serverName = String.Empty;
-
         [ObservableProperty]
         private string _serverHostname = String.Empty;
-
         [ObservableProperty]
         private uint _serverPort;
-
         [ObservableProperty]
         private string _requestName = String.Empty;
-
         [ObservableProperty]
         private string _requestResourcePath = String.Empty;
-
         [ObservableProperty]
         private HttpMethod _requestHttpMethod = HttpMethod.Get;
+
+        private readonly HttpClient _httpClient;
 
         public ToplevelViewModel(IMessenger messenger, HttpClient httpClient)
         {
@@ -90,16 +82,20 @@ namespace slimeget.ViewModels
                 Port = ServerPort,
             };
 
-            _applicationState.Add(ref collection);
-            _applicationState.SelectedCollection = collection;
+            var applicationState = _applicationState;
+            applicationState.Add(ref collection);
+            applicationState.SelectedCollection = collection;
+            applicationState.SelectedRequest = null;
 
-            Messenger.Send<ApplicationStateMessage>(new(_applicationState));
+            _applicationState = applicationState;
+            Messenger.Send<ApplicationStateMessage>(new(applicationState));
         }
 
         [RelayCommand]
         private void SaveRequestMethod()
         {
-            var collection = _applicationState.SelectedCollection;
+            var applicationState = _applicationState;
+            var collection = applicationState.SelectedCollection;
             if (collection == null)
                 throw new Exception("A server collection must be selected!");
             var requestMethod = new RequestMethod
@@ -109,16 +105,18 @@ namespace slimeget.ViewModels
                 HttpMethod = RequestHttpMethod,
             };
             collection.Add(ref requestMethod);
-            _applicationState.Update(collection);
-            _applicationState.SelectedRequest = requestMethod;
+            applicationState.Update(collection);
+            applicationState.SelectedRequest = requestMethod;
 
-            Messenger.Send<ApplicationStateMessage>(new(_applicationState));
+            _applicationState = applicationState;
+            Messenger.Send<ApplicationStateMessage>(new(applicationState));
         }
 
         [RelayCommand]
         private async Task SendRequestNow()
         {
-            var collection = _applicationState.SelectedCollection;
+            var applicationState = _applicationState;
+            var collection = applicationState.SelectedCollection;
             if (collection == null)
                 throw new Exception("A server collection must be selected!");
 
@@ -137,7 +135,7 @@ namespace slimeget.ViewModels
             }
 
             // Remove "/" as needed for resource path
-            var request = _applicationState.SelectedRequest;
+            var request = applicationState.SelectedRequest;
             if (request == null)
                 throw new Exception("Cannot send request without a selected request!");
             var resourcePath = request.ResourcePath;
@@ -157,12 +155,13 @@ namespace slimeget.ViewModels
             if (response == null)
                 throw new Exception("Failed to received a response!");
             request.Response = response;
-            _applicationState.SelectedRequest = request;
+            applicationState.SelectedRequest = request;
             collection.Update(request);
-            _applicationState.SelectedCollection = collection;
-            _applicationState.Update(collection);
+            applicationState.SelectedCollection = collection;
+            applicationState.Update(collection);
 
-            Messenger.Send<ApplicationStateMessage>(new(_applicationState));
+            _applicationState = applicationState;
+            Messenger.Send<ApplicationStateMessage>(new(applicationState));
         }
     }
 

@@ -46,9 +46,12 @@ namespace slimeget.ViewModels
 			_applicationState = message.applicationState;
 
 			var methods = message.applicationState.SelectedCollection.RequestMethods;
-			Requests = methods
+			var requests = methods
 				.Select(x => x.ToString())
 				.ToList();
+			if (SelectedItem > requests.Count - 1) SelectedItem = 0;
+			Requests = requests;
+
 		}
 	}
 }
