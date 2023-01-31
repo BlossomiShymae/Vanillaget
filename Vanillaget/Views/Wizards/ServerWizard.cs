@@ -1,8 +1,9 @@
 ﻿using Terminal.Gui;
+using Vanillaget.Extensions;
 
 namespace Vanillaget.Views.Wizards
 {
-    internal class NewServerWizard : Wizard
+    internal class ServerWizard : Wizard
     {
         private static readonly int _rowMargin = 1;
         private readonly TextField _name;
@@ -20,14 +21,28 @@ namespace Vanillaget.Views.Wizards
         {
             get => ushort.Parse(_port.Text.ToString() ?? "80");
         }
+        public enum WizardType { New, Edit }
 
-        public NewServerWizard()
+        public static ServerWizard CreateFromType(WizardType type)
         {
-            Title = "New Server";
+            var title = "Server";
+            var subtitle = "Collection";
 
-            var step = new WizardStep("Create Collection")
+            return type switch
             {
-                HelpText = "Create a new request collection for a web server.",
+                WizardType.New => new("New".AppendPad(title), "New".AppendPad(subtitle), "Create a new request collection for a web server."),
+                WizardType.Edit => new("Edit".AppendPad(title), "Edit".AppendPad(subtitle), "Edit the current request collection."),
+                _ => throw new ArgumentException("Invalid WizardType"),
+            };
+        }
+
+        private ServerWizard(string title, string subtitle, string helpText)
+        {
+            Title = title;
+
+            var step = new WizardStep(subtitle)
+            {
+                HelpText = helpText,
             };
             AddStep(step);
 

@@ -1,8 +1,9 @@
 ﻿using Terminal.Gui;
+using Vanillaget.Extensions;
 
 namespace Vanillaget.Views.Wizards
 {
-    internal class NewRequestWizard : Wizard
+    internal class RequestWizard : Wizard
     {
         private static readonly int _rowMargin = 1;
         private readonly TextField _name;
@@ -28,14 +29,28 @@ namespace Vanillaget.Views.Wizards
                 _ => throw new InvalidCastException("Selected method is invalid")
             };
         }
+        public enum WizardType { New, Edit }
 
-        public NewRequestWizard()
+        public static RequestWizard CreateFromType(WizardType type)
         {
-            Title = "New Request";
+            var title = "Request";
+            var subtitle = "Request Method";
 
-            var step = new WizardStep("Create Request Method")
+            return type switch
             {
-                HelpText = "Create a new request method to send."
+                WizardType.New => new("New".AppendPad(title), "New".AppendPad(subtitle), "Create a new request method to send."),
+                WizardType.Edit => new("Edit".AppendPad(title), "Edit".AppendPad(subtitle), "Edit the current request method."),
+                _ => throw new ArgumentException("Invalid WizardType"),
+            };
+        }
+
+        private RequestWizard(string title, string subtitle, string helpText)
+        {
+            Title = title;
+
+            var step = new WizardStep(subtitle)
+            {
+                HelpText = helpText
             };
             AddStep(step);
 
